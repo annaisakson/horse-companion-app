@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { View, Text, TextInput, Button, Alert } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
 import { useRouter } from "expo-router";
 
@@ -41,7 +42,7 @@ const AddHorseScreen = () => {
   };
 
   return (
-    <View className="flex-1 items-center justify-center p-4">
+    <SafeAreaView className="flex-1 items-center justify-center p-4">
       <Text className="text-2xl font-bold mb-6">Add a Horse</Text>
       <TextInput
         placeholder="Horse name"
@@ -51,7 +52,7 @@ const AddHorseScreen = () => {
       />
       <Button title="Add Horse" onPress={handleAddHorse} />
       <Button title="Log out" onPress={handleLogout} />
-    </View>
+    </SafeAreaView>
   );
 };
 

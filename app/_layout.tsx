@@ -1,8 +1,15 @@
+import "../global.css";
 import { Slot, useRouter } from "expo-router";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { Session } from "@supabase/supabase-js";
 import { ActivityIndicator, View } from "react-native";
+
+// TODO:
+// if restday, disable other choices except notes
+// update page when changing horse
+// click activity to go to go to edit page
+// add picture to horse
 
 export default function RootLayout() {
   const router = useRouter();
