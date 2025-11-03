@@ -1,14 +1,17 @@
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, usePathname } from "expo-router";
 import { useHorse } from "../lib/HorseContext";
 
 export default function HorseSelector() {
   const { horses, selectedHorseId, setSelectedHorseId } = useHorse();
   const router = useRouter();
+  const pathname = usePathname();
 
   if (horses.length === 0) {
     return null;
   }
+
+  const isHome = pathname === "/";
 
   return (
     <View className="bg-white p-4 border-b border-gray-200 flex-row items-center justify-between">
@@ -39,11 +42,11 @@ export default function HorseSelector() {
           </TouchableOpacity>
         ))}
       </ScrollView>
-      <View className="mb-2">
+      {isHome && (
         <TouchableOpacity onPress={() => router.push("/add-horse")}>
           <Text className="text-blue-500 font-semibold">+ Add</Text>
         </TouchableOpacity>
-      </View>
+      )}
     </View>
   );
 }

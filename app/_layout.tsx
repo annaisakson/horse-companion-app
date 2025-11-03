@@ -4,12 +4,15 @@ import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { Session } from "@supabase/supabase-js";
 import { ActivityIndicator, View } from "react-native";
+import { HorseProvider } from "../lib/HorseContext";
 
 // TODO:
 // if restday, disable other choices except notes
 // update page when changing horse
 // click activity to go to go to edit page
 // add picture to horse
+// add proper safety to passwords/names/etc
+// overall styling
 
 export default function RootLayout() {
   const router = useRouter();
@@ -52,5 +55,9 @@ export default function RootLayout() {
     );
   }
 
-  return <Slot />;
+  return (
+    <HorseProvider>
+      <Slot />
+    </HorseProvider>
+  );
 }

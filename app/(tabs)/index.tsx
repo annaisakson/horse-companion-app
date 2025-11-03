@@ -11,7 +11,11 @@ import { useRouter } from "expo-router";
 import { useHorse } from "../../lib/HorseContext";
 import HorseSelector from "../../components/HorseSelector";
 import { supabase } from "../../lib/supabase";
-import { ACTIVITY_TYPES, FEELING_OPTIONS } from "../../lib/constants";
+import {
+  ACTIVITY_TYPES,
+  FEELING_OPTIONS,
+  SPECIAL_TYPES,
+} from "../../lib/constants";
 
 interface Activity {
   id: string;
@@ -262,6 +266,9 @@ export default function Homescreen() {
                     <TouchableOpacity
                       key={activity.id}
                       className="bg-white rounded-2xl shadow-sm mb-3 p-4"
+                      onPress={() =>
+                        router.push(`/activity-details?id=${activity.id}`)
+                      }
                     >
                       {/* Type and Duration Badge */}
                       <View
@@ -271,12 +278,11 @@ export default function Homescreen() {
                         <Text className="text-white font-semibold">
                           {activityType.label}
                         </Text>
-                        {activity.type !== "rest" &&
-                          activity.type !== "injured" && (
-                            <Text className="text-white ml-2">
-                              • {activity.duration} min
-                            </Text>
-                          )}
+                        {!SPECIAL_TYPES.includes(activity.type) && (
+                          <Text className="text-white ml-2">
+                            • {activity.duration} min
+                          </Text>
+                        )}
                       </View>
 
                       {/* Notes (truncated) */}
