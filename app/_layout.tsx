@@ -13,6 +13,8 @@ import { HorseProvider } from "../lib/HorseContext";
 // add picture to horse
 // add proper safety to passwords/names/etc
 // overall styling
+// limits on amount of horses
+// check that fetch horses works after logging in after a while
 
 export default function RootLayout() {
   const router = useRouter();

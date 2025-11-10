@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import { useRouter, usePathname } from "expo-router";
 import { useHorse } from "../lib/HorseContext";
 
@@ -20,33 +20,47 @@ export default function HorseSelector() {
           <TouchableOpacity
             key={horse.id}
             onPress={() => setSelectedHorseId(horse.id)}
-            className={`mr-3 px-5 py-2 rounded-full flex items-center ${
-              selectedHorseId === horse.id ? "bg-blue-500" : "bg-gray-200"
-            }`}
+            className="mr-3 items-center"
           >
-            <Text
-              className={`font-semibold ${
-                selectedHorseId === horse.id ? "text-white" : "text-gray-700"
+            {/* Photo Container */}
+            <View
+              className={`w-16 h-16 rounded-full items-center justify-center overflow-hidden border-4 mb-2 ${
+                selectedHorseId === horse.id
+                  ? "border-blue-500 bg-blue-100"
+                  : "border-gray-300 bg-gray-200"
               }`}
             >
-              🐴
-              {/* {horse.img} */}
-            </Text>
+              {horse.photo_url ? (
+                <Image
+                  source={{ uri: horse.photo_url }}
+                  className="w-full h-full"
+                  resizeMode="cover"
+                />
+              ) : (
+                <Text className="text-2xl">🐴</Text>
+              )}
+            </View>
+
+            {/* Horse Name */}
             <Text
-              className={`font-semibold ${
-                selectedHorseId === horse.id ? "text-white" : "text-gray-700"
+              className={`text-sm font-semibold text-center max-w-[70px] ${
+                selectedHorseId === horse.id ? "text-blue-500" : "text-gray-700"
               }`}
+              numberOfLines={1}
             >
               {horse.name}
             </Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
-      {isHome && (
-        <TouchableOpacity onPress={() => router.push("/add-horse")}>
-          <Text className="text-blue-500 font-semibold">+ Add</Text>
-        </TouchableOpacity>
-      )}
+      <View className="mb-2">
+        {/* Only show Add button on home */}
+        {isHome && (
+          <TouchableOpacity onPress={() => router.push("/add-horse")}>
+            <Text className="text-blue-500 font-semibold">+ Add</Text>
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 }

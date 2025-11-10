@@ -16,6 +16,8 @@ import {
   FEELING_OPTIONS,
   SPECIAL_TYPES,
 } from "../../lib/constants";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
 
 interface Activity {
   id: string;
@@ -32,7 +34,7 @@ interface Activity {
 
 export default function Homescreen() {
   const router = useRouter();
-  const { horses, selectedHorse, selectedHorseId } = useHorse();
+  const { horses, selectedHorse, selectedHorseId, refreshHorses } = useHorse();
   const [loading, setLoading] = useState(false);
   const [activities, setActivities] = useState<Activity[]>([]);
 
@@ -41,6 +43,19 @@ export default function Homescreen() {
       fetchActivities();
     }
   }, [selectedHorseId]);
+
+  useFocusEffect(
+    useCallback(() => {
+      // This runs every time the screen comes into focus
+      const refresh = async () => {
+        await refreshHorses(); // Refresh the horse list
+        if (selectedHorseId) {
+          await fetchActivities(); // Refresh activities for selected horse
+        }
+      };
+      refresh();
+    }, [selectedHorseId]) // Re-run if selected horse changes
+  );
 
   const fetchActivities = async () => {
     if (!selectedHorseId) return;

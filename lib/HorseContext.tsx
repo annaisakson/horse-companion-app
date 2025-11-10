@@ -13,6 +13,7 @@ interface Horse {
   name: string;
   owner_id: string;
   created_at: string;
+  photo_url: string | null;
 }
 
 interface HorseContextType {
@@ -33,10 +34,15 @@ export function HorseProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   const fetchHorses = async () => {
+    console.log("Fetching horses...");
     const {
       data: { user },
     } = await supabase.auth.getUser();
+
+    // If no user, clear horses and return
     if (!user) {
+      setHorses([]);
+      setSelectedHorseId(null);
       setLoading(false);
       return;
     }
@@ -44,7 +50,8 @@ export function HorseProvider({ children }: { children: ReactNode }) {
     const { data, error } = await supabase
       .from("horses")
       .select("*")
-      .eq("owner_id", user.id);
+      .eq("owner_id", user.id)
+      .order("created_at", { ascending: true });
 
     if (error) {
       console.error(error);
@@ -54,23 +61,43 @@ export function HorseProvider({ children }: { children: ReactNode }) {
 
     setHorses(data || []);
 
-    // If no horses exist → go to add-horse screen
-    if (!data || data.length === 0) {
-      router.replace("/add-horse");
-      return;
-    }
-
-    // Auto-select first horse if none selected
-    if (data && data.length > 0 && !selectedHorseId) {
-      setSelectedHorseId(data[0].id);
+    // Auto-select first horse if none selected or if selected horse no longer exists
+    if (data && data.length > 0) {
+      if (!selectedHorseId || !data.find((h) => h.id === selectedHorseId)) {
+        setSelectedHorseId(data[0].id);
+      }
+    } else {
+      setSelectedHorseId(null);
     }
 
     setLoading(false);
   };
 
   useEffect(() => {
+    // Initial fetch
     fetchHorses();
-  }, []);
+
+    // Listen for auth state changes (login/logout)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event); // Helpful for debugging
+
+      if (event === "SIGNED_IN") {
+        // User just logged in - fetch their horses
+        await fetchHorses();
+      } else if (event === "SIGNED_OUT") {
+        // User logged out - clear horses
+        setHorses([]);
+        setSelectedHorseId(null);
+      }
+    });
+
+    // Cleanup: unsubscribe when component unmounts
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []); // Empty dependency array - only run once on mount
 
   const selectedHorse = horses.find((h) => h.id === selectedHorseId) || null;
 

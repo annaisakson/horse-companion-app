@@ -1,4 +1,11 @@
-import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  Image,
+} from "react-native";
 import { supabase } from "../../lib/supabase";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -102,7 +109,18 @@ export default function SettingsScreen() {
                   onPress={() => router.push(`/edit-horse?id=${horse.id}`)}
                 >
                   <View className="flex-row items-center">
-                    <Text className="text-2xl mr-3">🐴</Text>
+                    {/* Horse Photo or Emoji */}
+                    {horse.photo_url ? (
+                      <View className="w-10 h-10 rounded-full overflow-hidden mr-3 bg-gray-200">
+                        <Image
+                          source={{ uri: horse.photo_url }}
+                          className="w-full h-full"
+                          resizeMode="cover"
+                        />
+                      </View>
+                    ) : (
+                      <Text className="text-2xl mr-3">🐴</Text>
+                    )}
                     <Text className="text-base font-medium">{horse.name}</Text>
                   </View>
                   <Text className="text-gray-400">→</Text>
@@ -117,6 +135,19 @@ export default function SettingsScreen() {
                 Add New Horse
               </Text>
               <Text className="text-blue-500">+</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Customization Section */}
+          <Text className="text-sm text-gray-500 uppercase font-semibold mb-3 px-2">
+            Customize
+          </Text>
+          <View className="bg-white rounded-lg mb-6">
+            <TouchableOpacity className="p-4">
+              <Text className="text-base text-gray-700">Language</Text>
+            </TouchableOpacity>
+            <TouchableOpacity className="p-4">
+              <Text className="text-base text-gray-700">Theme</Text>
             </TouchableOpacity>
           </View>
 
