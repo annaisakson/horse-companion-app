@@ -19,6 +19,8 @@ import {
   FEELING_OPTIONS,
   SPECIAL_TYPES,
 } from "../lib/constants";
+import { useTheme } from "@react-navigation/native";
+import { ExtendedTheme } from "../utilities/themes";
 
 interface Activity {
   id: string;
@@ -36,6 +38,7 @@ interface Activity {
 export default function ActivityDetailsScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { colors } = useTheme() as ExtendedTheme;
 
   const [activity, setActivity] = useState<Activity | null>(null);
   const [loading, setLoading] = useState(true);
@@ -48,6 +51,8 @@ export default function ActivityDetailsScreen() {
   const [level, setLevel] = useState(3);
   const [feeling, setFeeling] = useState<string>("");
   const [notes, setNotes] = useState("");
+
+  const MAX_NOTES_LENGTH = 500;
 
   useEffect(() => {
     fetchActivity();
@@ -71,7 +76,6 @@ export default function ActivityDetailsScreen() {
     }
 
     setActivity(data);
-    // Set form state from activity
     setSelectedType(data.type);
     setDuration(data.duration || 30);
     setLevel(data.level || 3);
@@ -116,7 +120,7 @@ export default function ActivityDetailsScreen() {
 
     Alert.alert("Success!", "Activity updated");
     setIsEditing(false);
-    fetchActivity(); // Refresh data
+    fetchActivity();
     setSaving(false);
   };
 
@@ -156,7 +160,7 @@ export default function ActivityDetailsScreen() {
   };
 
   const getFeelingEmoji = (feelingId: string) => {
-    return FEELING_OPTIONS.find((f) => f.id === feelingId)?.emoji || "";
+    return FEELING_OPTIONS.find((f) => f.id === feelingId)?.emoji;
   };
 
   const getFeeling = (feelingId: string) => {
@@ -173,16 +177,22 @@ export default function ActivityDetailsScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" color="#0070f3" />
+      <SafeAreaView
+        className="flex-1 items-center justify-center"
+        style={{ backgroundColor: colors.background }}
+      >
+        <ActivityIndicator size="large" color={colors.primary} />
       </SafeAreaView>
     );
   }
 
   if (!activity) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center">
-        <Text>Activity not found</Text>
+      <SafeAreaView
+        className="flex-1 items-center justify-center"
+        style={{ backgroundColor: colors.background }}
+      >
+        <Text style={{ color: colors.text }}>Activity not found</Text>
       </SafeAreaView>
     );
   }
@@ -190,7 +200,11 @@ export default function ActivityDetailsScreen() {
   const activityType = getActivityType(activity.type);
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
+    <SafeAreaView
+      className="flex-1"
+      edges={["top"]}
+      style={{ backgroundColor: colors.background }}
+    >
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
@@ -201,24 +215,30 @@ export default function ActivityDetailsScreen() {
           keyboardShouldPersistTaps="handled"
         >
           {/* Header */}
-          <View className="flex-row items-center justify-between p-4 bg-white border-b border-gray-200">
-            {/* Back button */}
+          <View
+            className="flex-row items-center justify-between p-4 border-b"
+            style={{ backgroundColor: colors.card, borderColor: colors.border }}
+          >
             <TouchableOpacity onPress={() => router.back()}>
-              <Text className="text-blue-500 text-lg">← Back</Text>
+              <Text className="text-lg" style={{ color: colors.primary }}>
+                ← Back
+              </Text>
             </TouchableOpacity>
 
-            {/* Right side button */}
             {!isEditing ? (
-              // VIEW MODE → DELETE BUTTON
               <TouchableOpacity onPress={handleDelete} className="p-2">
-                <Text className="text-red-600 text-md font-semibold">
+                <Text className="text-md" style={{ color: "#ef7171ff" }}>
                   Delete
                 </Text>
               </TouchableOpacity>
             ) : (
-              // EDIT MODE → CANCEL BUTTON
               <TouchableOpacity onPress={() => setIsEditing(false)}>
-                <Text className="text-gray-500 text-lg">Cancel</Text>
+                <Text
+                  className="text-lg"
+                  style={{ color: colors.textSecondary }}
+                >
+                  Cancel
+                </Text>
               </TouchableOpacity>
             )}
           </View>
@@ -226,7 +246,10 @@ export default function ActivityDetailsScreen() {
           <View className="p-4">
             {/* Date Header */}
             <View className="mb-6">
-              <Text className="text-xl font-bold mb-2">
+              <Text
+                className="text-xl font-bold mb-2"
+                style={{ color: colors.text }}
+              >
                 {new Date(activity.date).toLocaleDateString("en-US", {
                   weekday: "long",
                   month: "long",
@@ -253,23 +276,33 @@ export default function ActivityDetailsScreen() {
                         className="flex-1 flex-row items-center rounded-lg"
                       >
                         <View
-                          className={`w-8 h-8 rounded border-2 mr-3 items-center justify-center ${
-                            selectedType === type.id
-                              ? "bg-white border-gray-300"
-                              : "border-gray-300"
-                          }`}
+                          className="w-8 h-8 rounded border-2 mr-3 items-center justify-center"
+                          style={{
+                            backgroundColor:
+                              selectedType === type.id
+                                ? colors.card
+                                : "transparent",
+                            borderColor: colors.border,
+                          }}
                         >
                           {selectedType === type.id && (
-                            <Text className="text-sm">✓</Text>
+                            <Text
+                              className="text-sm"
+                              style={{ color: colors.text }}
+                            >
+                              ✓
+                            </Text>
                           )}
                         </View>
                         <Text className="text-lg mr-2">{type.icon}</Text>
                         <Text
-                          className={`font-semibold ${
-                            selectedType === type.id
-                              ? "text-gray-700"
-                              : "text-gray-400"
-                          }`}
+                          className="font-semibold"
+                          style={{
+                            color:
+                              selectedType === type.id
+                                ? colors.text
+                                : colors.textSecondary,
+                          }}
                         >
                           {type.label}
                         </Text>
@@ -280,7 +313,10 @@ export default function ActivityDetailsScreen() {
 
                 {/* Activity Type Selection */}
                 <View className={`mb-6 ${isSpecialType ? "opacity-40" : ""}`}>
-                  <Text className="text-lg font-semibold mb-3">
+                  <Text
+                    className="text-lg font-semibold mb-3"
+                    style={{ color: colors.text }}
+                  >
                     Activity Type
                   </Text>
                   <ScrollView
@@ -295,17 +331,23 @@ export default function ActivityDetailsScreen() {
                           !isSpecialType && setSelectedType(type.id)
                         }
                         disabled={isSpecialType}
-                        className={`mr-3 px-4 py-3 rounded-lg items-center justify-center min-w-[80px] ${
-                          selectedType === type.id ? "bg-blue-500" : "bg-white"
-                        }`}
+                        className="mr-3 px-4 py-3 rounded-lg items-center justify-center min-w-[80px]"
+                        style={{
+                          backgroundColor:
+                            selectedType === type.id
+                              ? colors.primary
+                              : colors.card,
+                        }}
                       >
                         <Text className="text-2xl mb-1">{type.icon}</Text>
                         <Text
-                          className={`text-xs font-medium ${
-                            selectedType === type.id
-                              ? "text-white"
-                              : "text-gray-700"
-                          }`}
+                          className="text-xs font-medium"
+                          style={{
+                            color:
+                              selectedType === type.id
+                                ? "#FFFFFF"
+                                : colors.text,
+                          }}
                         >
                           {type.label}
                         </Text>
@@ -316,11 +358,13 @@ export default function ActivityDetailsScreen() {
 
                 {/* Duration Slider */}
                 <View
-                  className={`mb-6 bg-white p-4 rounded-lg ${
-                    isSpecialType ? "opacity-40" : ""
-                  }`}
+                  className={`mb-6 p-4 rounded-lg ${isSpecialType ? "opacity-40" : ""}`}
+                  style={{ backgroundColor: colors.card }}
                 >
-                  <Text className="text-lg font-semibold mb-2">
+                  <Text
+                    className="text-lg font-semibold mb-2"
+                    style={{ color: colors.text }}
+                  >
                     Duration: {duration} min
                   </Text>
                   <Slider
@@ -329,23 +373,37 @@ export default function ActivityDetailsScreen() {
                     step={5}
                     value={duration}
                     onValueChange={setDuration}
-                    minimumTrackTintColor="#3B82F6"
-                    maximumTrackTintColor="#E5E7EB"
+                    minimumTrackTintColor={colors.primary}
+                    maximumTrackTintColor={colors.border}
+                    thumbTintColor={colors.primary}
                     disabled={isSpecialType}
+                    style={{ height: 40 }}
                   />
                   <View className="flex-row justify-between">
-                    <Text className="text-xs text-gray-500">15 min</Text>
-                    <Text className="text-xs text-gray-500">2 hrs</Text>
+                    <Text
+                      className="text-xs"
+                      style={{ color: colors.textSecondary }}
+                    >
+                      15 min
+                    </Text>
+                    <Text
+                      className="text-xs"
+                      style={{ color: colors.textSecondary }}
+                    >
+                      2 hrs
+                    </Text>
                   </View>
                 </View>
 
                 {/* Level Slider */}
                 <View
-                  className={`mb-6 bg-white p-4 rounded-lg ${
-                    isSpecialType ? "opacity-40" : ""
-                  }`}
+                  className={`mb-6 p-4 rounded-lg ${isSpecialType ? "opacity-40" : ""}`}
+                  style={{ backgroundColor: colors.card }}
                 >
-                  <Text className="text-lg font-semibold mb-2">
+                  <Text
+                    className="text-lg font-semibold mb-2"
+                    style={{ color: colors.text }}
+                  >
                     Exertion Level: {level}
                   </Text>
                   <Slider
@@ -354,19 +412,34 @@ export default function ActivityDetailsScreen() {
                     step={1}
                     value={level}
                     onValueChange={setLevel}
-                    minimumTrackTintColor="#3B82F6"
-                    maximumTrackTintColor="#E5E7EB"
+                    minimumTrackTintColor={colors.primary}
+                    maximumTrackTintColor={colors.border}
+                    thumbTintColor={colors.primary}
                     disabled={isSpecialType}
+                    style={{ height: 40 }}
                   />
                   <View className="flex-row justify-between">
-                    <Text className="text-xs text-gray-500">Light</Text>
-                    <Text className="text-xs text-gray-500">Intense</Text>
+                    <Text
+                      className="text-xs"
+                      style={{ color: colors.textSecondary }}
+                    >
+                      Light
+                    </Text>
+                    <Text
+                      className="text-xs"
+                      style={{ color: colors.textSecondary }}
+                    >
+                      Intense
+                    </Text>
                   </View>
                 </View>
 
                 {/* Feeling Selection */}
                 <View className={`mb-6 ${isSpecialType ? "opacity-40" : ""}`}>
-                  <Text className="text-lg font-semibold mb-3">
+                  <Text
+                    className="text-lg font-semibold mb-3"
+                    style={{ color: colors.text }}
+                  >
                     Overall Feeling
                   </Text>
                   <View className="flex-row justify-between">
@@ -375,12 +448,19 @@ export default function ActivityDetailsScreen() {
                         key={option.id}
                         onPress={() => !isSpecialType && setFeeling(option.id)}
                         disabled={isSpecialType}
-                        className={`items-center p-3 rounded-lg ${
-                          feeling === option.id ? "bg-blue-100" : "bg-white"
-                        }`}
+                        className="items-center p-3 rounded-lg"
+                        style={{
+                          backgroundColor:
+                            feeling === option.id
+                              ? colors.secondary
+                              : colors.card,
+                        }}
                       >
-                        <Text className="text-3xl mb-1">{option.emoji}</Text>
-                        <Text className="text-xs text-gray-600">
+                        <View className="mb-1">{option.emoji}</View>
+                        <Text
+                          className="text-xs"
+                          style={{ color: colors.textSecondary }}
+                        >
                           {option.label}
                         </Text>
                       </TouchableOpacity>
@@ -390,15 +470,41 @@ export default function ActivityDetailsScreen() {
 
                 {/* Notes */}
                 <View className="mb-6">
-                  <Text className="text-lg font-semibold mb-2">Notes</Text>
+                  <View className="flex-row justify-between items-center mb-2">
+                    <Text
+                      className="text-lg font-semibold"
+                      style={{ color: colors.text }}
+                    >
+                      Notes
+                    </Text>
+                    <Text
+                      className="text-xs"
+                      style={{
+                        color:
+                          notes.length > MAX_NOTES_LENGTH
+                            ? "#ef7171ff"
+                            : colors.textSecondary,
+                      }}
+                    >
+                      {notes.length}/{MAX_NOTES_LENGTH}
+                    </Text>
+                  </View>
                   <TextInput
                     placeholder="Add any notes..."
+                    placeholderTextColor={colors.textSecondary}
                     value={notes}
                     onChangeText={setNotes}
+                    maxLength={MAX_NOTES_LENGTH}
                     multiline
-                    numberOfLines={4}
-                    className="bg-white p-3 rounded-lg border border-gray-200"
-                    textAlignVertical="top"
+                    numberOfLines={6}
+                    className="p-4 rounded-lg border"
+                    style={{
+                      backgroundColor: colors.card,
+                      borderColor: colors.border,
+                      color: colors.text,
+                      minHeight: 120,
+                      textAlignVertical: "top",
+                    }}
                   />
                 </View>
 
@@ -406,9 +512,10 @@ export default function ActivityDetailsScreen() {
                 <TouchableOpacity
                   onPress={handleSave}
                   disabled={saving}
-                  className={`py-4 rounded-lg mb-3 ${
-                    saving ? "bg-gray-400" : "bg-blue-500"
-                  }`}
+                  className="py-4 rounded-lg mb-3"
+                  style={{
+                    backgroundColor: saving ? colors.border : colors.primary,
+                  }}
                 >
                   <Text className="text-white text-center font-bold text-lg">
                     {saving ? "Saving..." : "Save Changes"}
@@ -433,28 +540,52 @@ export default function ActivityDetailsScreen() {
 
                 {/* Details Card */}
                 {!SPECIAL_TYPES.includes(activity.type) && (
-                  <View className="bg-white p-4 rounded-lg mb-4">
-                    <View className="flex-row justify-between items-center mb-3 pb-3 border-b border-gray-100">
-                      <Text className="text-gray-600">Duration</Text>
-                      <Text className="font-semibold text-lg">
+                  <View
+                    className="p-4 rounded-lg mb-4"
+                    style={{ backgroundColor: colors.card }}
+                  >
+                    <View
+                      className="flex-row justify-between items-center mb-3 pb-3 border-b"
+                      style={{ borderColor: colors.border }}
+                    >
+                      <Text style={{ color: colors.textSecondary }}>
+                        Duration
+                      </Text>
+                      <Text
+                        className="font-semibold text-lg"
+                        style={{ color: colors.text }}
+                      >
                         {activity.duration} minutes
                       </Text>
                     </View>
-                    <View className="flex-row justify-between items-center mb-3 pb-3 border-b border-gray-100">
-                      <Text className="text-gray-600">Exertion Level</Text>
-                      <Text className="font-semibold text-lg">
+                    <View
+                      className="flex-row justify-between items-center mb-3 pb-3 border-b"
+                      style={{ borderColor: colors.border }}
+                    >
+                      <Text style={{ color: colors.textSecondary }}>
+                        Exertion Level
+                      </Text>
+                      <Text
+                        className="font-semibold text-lg"
+                        style={{ color: colors.text }}
+                      >
                         {activity.level}/5
                       </Text>
                     </View>
                     <View className="flex-row justify-between items-center">
-                      <Text className="text-gray-600">Feeling</Text>
-                      <View className="flex flex-row justify-between items-center gap-2">
-                        <Text className="text-xl">
+                      <Text style={{ color: colors.textSecondary }}>
+                        Feeling
+                      </Text>
+                      <View className="flex-row items-center gap-2">
+                        <Text
+                          className="text-xl"
+                          style={{ color: colors.text }}
+                        >
                           {getFeeling(activity.feeling || "")}
                         </Text>
-                        <Text className="text-3xl">
+                        <View className="text-3xl">
                           {getFeelingEmoji(activity.feeling || "")}
-                        </Text>
+                        </View>
                       </View>
                     </View>
                   </View>
@@ -462,18 +593,25 @@ export default function ActivityDetailsScreen() {
 
                 {/* Notes */}
                 {activity.notes && (
-                  <View className="bg-white p-4 rounded-lg mb-4">
-                    <Text className="text-gray-600 font-semibold mb-2">
+                  <View
+                    className="p-4 rounded-lg mb-4"
+                    style={{ backgroundColor: colors.card }}
+                  >
+                    <Text
+                      className="font-semibold mb-2"
+                      style={{ color: colors.textSecondary }}
+                    >
                       Notes
                     </Text>
-                    <Text className="text-gray-800">{activity.notes}</Text>
+                    <Text style={{ color: colors.text }}>{activity.notes}</Text>
                   </View>
                 )}
 
-                {/* Edit Button (View Mode) */}
+                {/* Edit Button */}
                 <TouchableOpacity
                   onPress={() => setIsEditing(true)}
-                  className="py-4 rounded-lg bg-blue-500 mt-4"
+                  className="py-4 rounded-lg mt-4"
+                  style={{ backgroundColor: colors.primary }}
                 >
                   <Text className="text-white text-center font-bold text-lg">
                     Edit Activity

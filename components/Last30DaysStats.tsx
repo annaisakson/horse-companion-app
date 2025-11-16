@@ -15,7 +15,6 @@ interface Last30DaysStatsProps {
 export default function Last30DaysStats({ activities }: Last30DaysStatsProps) {
   const { colors } = useTheme() as ExtendedTheme;
 
-  // Calculate stats for last 30 days
   const getLast30DaysStats = () => {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -58,13 +57,19 @@ export default function Last30DaysStats({ activities }: Last30DaysStatsProps) {
       >
         Last 30 Days
       </Text>
-      <View className="flex-row justify-between py-2 border-b border-gray-100">
+      <View
+        className="flex-row justify-between py-2 border-b"
+        style={{ borderColor: colors.border }}
+      >
         <Text style={{ color: colors.textSecondary }}>Total sessions</Text>
         <Text className="font-semibold" style={{ color: colors.text }}>
           {stats.totalSessions}
         </Text>
       </View>
-      <View className="flex-row justify-between py-2 border-b border-gray-100">
+      <View
+        className="flex-row justify-between py-2 border-b"
+        style={{ borderColor: colors.border }}
+      >
         <Text style={{ color: colors.textSecondary }}>Total time</Text>
         <Text className="font-semibold" style={{ color: colors.text }}>
           {stats.totalTime} min

@@ -21,45 +21,44 @@ import {
 import HorseSelector from "../../components/HorseSelector";
 import { useHorse } from "../../lib/HorseContext";
 import { useLocalSearchParams } from "expo-router";
-
-// needs to get the selected horse id from the homescreen
-// needs to post the activity to the api and fill the table in supabase
-
-const {
-  planId,
-  type: prefilledType,
-  notes: prefilledNotes,
-} = useLocalSearchParams<{
-  planId?: string;
-  type?: string;
-  notes?: string;
-}>();
+import { useTheme } from "@react-navigation/native";
+import { ExtendedTheme } from "../../utilities/themes";
 
 export default function AddActivityScreen() {
   const router = useRouter();
+  const { colors } = useTheme() as ExtendedTheme;
+
+  const {
+    planId,
+    type: prefilledType,
+    notes: prefilledNotes,
+  } = useLocalSearchParams<{
+    planId?: string;
+    type?: string;
+    notes?: string;
+  }>();
+
   const [selectedType, setSelectedType] = useState<string>(prefilledType || "");
   const [notes, setNotes] = useState(decodeURIComponent(prefilledNotes || ""));
-  const [duration, setDuration] = useState(30); // minutes
+  const [duration, setDuration] = useState(30);
   const [level, setLevel] = useState(3);
   const [feeling, setFeeling] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const { selectedHorseId, selectedHorse } = useHorse();
 
-  // Check if a special type (rest/injured) is selected
+  const MAX_NOTES_LENGTH = 250;
+
   const isSpecialType = SPECIAL_TYPES.includes(selectedType);
 
-  // Get the special activity types for checkboxes
   const specialActivityTypes = ACTIVITY_TYPES.filter((type) =>
     SPECIAL_TYPES.includes(type.id)
   );
 
-  // Get regular activity types (excluding special ones)
   const regularActivityTypes = ACTIVITY_TYPES.filter(
     (type) => !SPECIAL_TYPES.includes(type.id)
   );
 
   const handleSpecialTypeToggle = (typeId: string) => {
-    // Toggle: if already selected, deselect; otherwise select
     setSelectedType(selectedType === typeId ? "" : typeId);
   };
 
@@ -74,7 +73,6 @@ export default function AddActivityScreen() {
       return;
     }
 
-    // For special types, we don't need duration/level/feeling
     if (!isSpecialType && !feeling) {
       Alert.alert("Please select how you're feeling");
       return;
@@ -98,13 +96,11 @@ export default function AddActivityScreen() {
         created_by: user.id,
       };
 
-      // Only add duration/level/feeling if NOT a special type
       if (!isSpecialType) {
         activityData.duration = duration;
         activityData.level = level;
         activityData.feeling = feeling;
       } else {
-        // For special types, set defaults or null
         activityData.duration = null;
         activityData.level = null;
         activityData.feeling = null;
@@ -116,7 +112,6 @@ export default function AddActivityScreen() {
 
       Alert.alert("Success!", `Activity logged for ${selectedHorse?.name}`);
 
-      // Reset form
       setSelectedType("");
       setDuration(30);
       setLevel(3);
@@ -133,11 +128,24 @@ export default function AddActivityScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
+    <SafeAreaView
+      className="flex-1"
+      edges={["top"]}
+      style={{ backgroundColor: colors.background }}
+    >
       {planId && (
-        <View className="bg-blue-50 p-3 border-b border-blue-200">
-          <Text className="text-blue-900 font-semibold text-center">
-            📅 Logging planned activity
+        <View
+          className="p-3 border-b"
+          style={{
+            backgroundColor: colors.secondary,
+            borderColor: colors.primary,
+          }}
+        >
+          <Text
+            className="font-semibold text-center"
+            style={{ color: colors.textSecondary }}
+          >
+            Logging planned activity
           </Text>
         </View>
       )}
@@ -152,7 +160,12 @@ export default function AddActivityScreen() {
           contentContainerStyle={{ paddingBottom: 150 }}
           keyboardShouldPersistTaps="handled"
         >
-          <Text className="text-2xl font-bold mb-6">Log Activity</Text>
+          <Text
+            className="text-2xl font-bold mb-6"
+            style={{ color: colors.text }}
+          >
+            Log Activity
+          </Text>
 
           {/* Special Type Checkboxes (Rest Day / Injured) */}
           <View className="mb-10">
@@ -161,26 +174,36 @@ export default function AddActivityScreen() {
                 <TouchableOpacity
                   key={type.id}
                   onPress={() => handleSpecialTypeToggle(type.id)}
-                  className="flex-1 flex-row items-center rounded-lg "
+                  className="flex-1 flex-row items-center rounded-lg"
                 >
                   <View
-                    className={`w-8 h-8 rounded border-2 mr-3 items-center justify-center ${
-                      selectedType === type.id
-                        ? "bg-white border-gray-300"
-                        : "border-gray-300"
-                    }`}
+                    className="w-8 h-8 rounded border-2 mr-3 items-center justify-center"
+                    style={{
+                      backgroundColor:
+                        selectedType === type.id ? colors.card : "transparent",
+                      borderColor: colors.border,
+                    }}
                   >
                     {selectedType === type.id && (
-                      <Text className="text-sm">✓</Text>
+                      <Text className="text-sm" style={{ color: colors.text }}>
+                        ✓
+                      </Text>
                     )}
                   </View>
-                  <Text className="text-lg mr-2">{type.icon}</Text>
                   <Text
-                    className={`font-semibold text-gray-700 ${
-                      selectedType === type.id
-                        ? "text-gray-700"
-                        : "text-gray-400"
-                    }`}
+                    className="text-lg mr-2"
+                    style={{ color: colors.textSecondary, fontSize: 24 }}
+                  >
+                    {type.icon}
+                  </Text>
+                  <Text
+                    className="font-semibold"
+                    style={{
+                      color:
+                        selectedType === type.id
+                          ? colors.text
+                          : colors.textSecondary,
+                    }}
                   >
                     {type.label}
                   </Text>
@@ -191,7 +214,12 @@ export default function AddActivityScreen() {
 
           {/* Regular Activity Type Selection */}
           <View className={`mb-6 ${isSpecialType ? "opacity-40" : ""}`}>
-            <Text className="text-lg font-semibold mb-3">Activity Type</Text>
+            <Text
+              className="text-lg font-semibold mb-3"
+              style={{ color: colors.text }}
+            >
+              Activity Type
+            </Text>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -203,15 +231,18 @@ export default function AddActivityScreen() {
                   key={type.id}
                   onPress={() => !isSpecialType && setSelectedType(type.id)}
                   disabled={isSpecialType}
-                  className={`mr-3 px-4 py-3 rounded-lg items-center justify-center min-w-[80px] ${
-                    selectedType === type.id ? "bg-blue-500" : "bg-white"
-                  }`}
+                  className="mr-3 px-4 py-3 rounded-lg items-center justify-center w-[92px]"
+                  style={{
+                    backgroundColor:
+                      selectedType === type.id ? colors.primary : colors.card,
+                  }}
                 >
                   <Text className="text-2xl mb-1">{type.icon}</Text>
                   <Text
-                    className={`text-xs font-medium ${
-                      selectedType === type.id ? "text-white" : "text-gray-700"
-                    }`}
+                    className="text-xs font-medium"
+                    style={{
+                      color: selectedType === type.id ? "#FFFFFF" : colors.text,
+                    }}
                   >
                     {type.label}
                   </Text>
@@ -222,11 +253,15 @@ export default function AddActivityScreen() {
 
           {/* Duration Slider */}
           <View
-            className={`mb-6 bg-white p-4 rounded-lg ${
+            className={`mb-6 p-4 rounded-lg ${
               isSpecialType ? "opacity-40" : ""
             }`}
+            style={{ backgroundColor: colors.card }}
           >
-            <Text className="text-lg font-semibold mb-2">
+            <Text
+              className="text-lg font-semibold mb-2"
+              style={{ color: colors.text }}
+            >
               Duration: {duration} min
             </Text>
             <Slider
@@ -235,23 +270,33 @@ export default function AddActivityScreen() {
               step={5}
               value={duration}
               onValueChange={setDuration}
-              minimumTrackTintColor="#3B82F6"
-              maximumTrackTintColor="#E5E7EB"
+              minimumTrackTintColor={colors.secondary}
+              maximumTrackTintColor={colors.border}
+              thumbTintColor={colors.primary}
               disabled={isSpecialType}
+              style={{ height: 40 }} // Makes the slider track area larger
             />
             <View className="flex-row justify-between">
-              <Text className="text-xs text-gray-500">15 min</Text>
-              <Text className="text-xs text-gray-500">2 hrs</Text>
+              <Text className="text-xs" style={{ color: colors.textSecondary }}>
+                15 min
+              </Text>
+              <Text className="text-xs" style={{ color: colors.textSecondary }}>
+                2 hrs
+              </Text>
             </View>
           </View>
 
           {/* Exertion Level Slider */}
           <View
-            className={`mb-6 bg-white p-4 rounded-lg ${
+            className={`mb-6 p-4 rounded-lg ${
               isSpecialType ? "opacity-40" : ""
             }`}
+            style={{ backgroundColor: colors.card }}
           >
-            <Text className="text-lg font-semibold mb-2">
+            <Text
+              className="text-lg font-semibold mb-2"
+              style={{ color: colors.text }}
+            >
               Exertion Level: {level}
             </Text>
             <Slider
@@ -260,51 +305,99 @@ export default function AddActivityScreen() {
               step={1}
               value={level}
               onValueChange={setLevel}
-              minimumTrackTintColor="#3B82F6"
-              maximumTrackTintColor="#E5E7EB"
+              minimumTrackTintColor={colors.secondary}
+              maximumTrackTintColor={colors.border}
+              thumbTintColor={colors.primary}
               disabled={isSpecialType}
+              style={{ height: 40 }}
             />
             <View className="flex-row justify-between">
-              <Text className="text-xs text-gray-500">Light</Text>
-              <Text className="text-xs text-gray-500">Intense</Text>
+              <Text className="text-xs" style={{ color: colors.textSecondary }}>
+                Light
+              </Text>
+              <Text className="text-xs" style={{ color: colors.textSecondary }}>
+                Intense
+              </Text>
             </View>
           </View>
 
           {/* Feeling Selection */}
           <View className={`mb-6 ${isSpecialType ? "opacity-40" : ""}`}>
-            <Text className="text-lg font-semibold mb-3">Overall Feeling</Text>
+            <Text
+              className="text-lg font-semibold mb-3"
+              style={{ color: colors.text }}
+            >
+              Overall Feeling
+            </Text>
             <View className="flex-row justify-between">
               {FEELING_OPTIONS.map((option) => (
                 <TouchableOpacity
                   key={option.id}
                   onPress={() => !isSpecialType && setFeeling(option.id)}
                   disabled={isSpecialType}
-                  className={`items-center p-3 rounded-lg ${
-                    feeling === option.id ? "bg-blue-100" : "bg-white"
-                  }`}
+                  className="items-center p-3 rounded-lg w-[62px]"
+                  style={{
+                    backgroundColor:
+                      feeling === option.id ? colors.secondary : colors.card,
+                  }}
                 >
-                  <Text className="text-3xl mb-1">{option.emoji}</Text>
-                  <Text className="text-xs text-gray-600">{option.label}</Text>
+                  <View className="mb-1">
+                    <Text style={{ color: colors.text, fontSize: 24 }}>
+                      {option.emoji}
+                    </Text>
+                  </View>
+                  <Text
+                    className="text-xs"
+                    style={{ color: colors.textSecondary }}
+                  >
+                    {option.label}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>
           </View>
 
-          {/* Notes - Always enabled */}
+          {/* Notes - Always enabled with character counter */}
           <View className="mb-6">
-            <Text className="text-lg font-semibold mb-2">Notes (Optional)</Text>
+            <View className="flex-row justify-between items-center mb-2">
+              <Text
+                className="text-lg font-semibold"
+                style={{ color: colors.text }}
+              >
+                Notes (Optional)
+              </Text>
+              <Text
+                className="text-xs"
+                style={{
+                  color:
+                    notes.length > MAX_NOTES_LENGTH
+                      ? "#EF4444"
+                      : colors.textSecondary,
+                }}
+              >
+                {notes.length}/{MAX_NOTES_LENGTH}
+              </Text>
+            </View>
             <TextInput
               placeholder={
                 isSpecialType
                   ? "Add any notes..."
                   : "Add any notes about the session..."
               }
+              placeholderTextColor={colors.textSecondary}
               value={notes}
               onChangeText={setNotes}
+              maxLength={MAX_NOTES_LENGTH}
               multiline
-              numberOfLines={4}
-              className="bg-white p-3 rounded-lg border border-gray-200"
-              textAlignVertical="top"
+              numberOfLines={6}
+              className="p-4 rounded-lg border"
+              style={{
+                backgroundColor: colors.card,
+                borderColor: colors.border,
+                color: colors.text,
+                minHeight: 120,
+                textAlignVertical: "top",
+              }}
             />
           </View>
 
@@ -312,9 +405,10 @@ export default function AddActivityScreen() {
           <TouchableOpacity
             onPress={handleSave}
             disabled={loading}
-            className={`py-4 rounded-lg ${
-              loading ? "bg-gray-400" : "bg-blue-500"
-            }`}
+            className="py-4 rounded-lg"
+            style={{
+              backgroundColor: loading ? colors.border : colors.primary,
+            }}
           >
             <Text className="text-white text-center font-bold text-lg">
               {loading ? "Saving..." : "Save Activity"}

@@ -14,11 +14,14 @@ import { supabase } from "../lib/supabase";
 import { useHorse } from "../lib/HorseContext";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system/legacy";
+import { useTheme } from "@react-navigation/native";
+import { ExtendedTheme } from "../utilities/themes";
 
 export default function EditHorseScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { refreshHorses } = useHorse();
+  const { colors } = useTheme() as ExtendedTheme;
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -51,8 +54,6 @@ export default function EditHorseScreen() {
   };
 
   const pickImage = async () => {
-    // Request permission to access media library
-    // Required on iOS and Android
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (status !== "granted") {
@@ -63,20 +64,16 @@ export default function EditHorseScreen() {
       return;
     }
 
-    // Launch the image picker
-    // This opens the device's photo gallery
     const result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.7,
     });
 
-    // If user cancelled, do nothing
     if (result.canceled) {
       return;
     }
 
-    // If user selected an image, upload it
     await uploadImage(result.assets[0].uri);
   };
 
@@ -85,7 +82,6 @@ export default function EditHorseScreen() {
     setUploading(true);
 
     try {
-      // Get current user
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -93,25 +89,21 @@ export default function EditHorseScreen() {
 
       const filePath = `${user.id}/${id}.jpg`;
 
-      // Delete old photo if exists
       if (photoUrl) {
         const oldPath = photoUrl.split("/horse-photos/")[1];
         await supabase.storage.from("horse-photos").remove([oldPath]);
       }
 
-      // ✅ Use the legacy API safely
       const base64 = await FileSystem.readAsStringAsync(uri, {
         encoding: "base64",
       });
 
-      // Convert base64 → binary
       const binaryString = atob(base64);
       const bytes = new Uint8Array(binaryString.length);
       for (let i = 0; i < binaryString.length; i++) {
         bytes[i] = binaryString.charCodeAt(i);
       }
 
-      // Upload binary data to Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from("horse-photos")
         .upload(filePath, bytes.buffer, {
@@ -121,12 +113,10 @@ export default function EditHorseScreen() {
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
       const {
         data: { publicUrl },
       } = supabase.storage.from("horse-photos").getPublicUrl(filePath);
 
-      // Update horse record
       const { error: updateError } = await supabase
         .from("horses")
         .update({ photo_url: publicUrl })
@@ -134,7 +124,6 @@ export default function EditHorseScreen() {
 
       if (updateError) throw updateError;
 
-      // Refresh UI
       setPhotoUrl(publicUrl);
       await refreshHorses();
 
@@ -183,7 +172,6 @@ export default function EditHorseScreen() {
           text: "Delete",
           style: "destructive",
           onPress: async () => {
-            // If there's a photo, delete it from storage first
             if (photoUrl) {
               const filePath = photoUrl.split("/horse-photos/")[1];
               await supabase.storage.from("horse-photos").remove([filePath]);
@@ -211,26 +199,36 @@ export default function EditHorseScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" />
+      <SafeAreaView
+        className="flex-1 items-center justify-center"
+        style={{ backgroundColor: colors.background }}
+      >
+        <ActivityIndicator size="large" color={colors.primary} />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
+    <SafeAreaView
+      className="flex-1"
+      edges={["top"]}
+      style={{ backgroundColor: colors.background }}
+    >
       {/* Header */}
-      <View className="flex-row items-center justify-between p-4 bg-white border-b border-gray-200">
+      <View
+        className="flex-row items-center justify-between p-4 border-b"
+        style={{ backgroundColor: colors.card, borderColor: colors.border }}
+      >
         <TouchableOpacity onPress={() => router.back()}>
-          <Text className="text-blue-500 text-lg">← Back</Text>
+          <Text className="text-lg" style={{ color: colors.primary }}>
+            ← Back
+          </Text>
         </TouchableOpacity>
-        <Text className="text-xl font-bold">Edit Horse</Text>
-        {/* Delete Button */}
-        <TouchableOpacity
-          onPress={handleDelete}
-          className="p-2 rounded-lg bg-red-700"
-        >
-          <Text className="text-white text-center font-bold text-sm">
+        <Text className="text-xl font-bold" style={{ color: colors.text }}>
+          Edit Horse
+        </Text>
+        <TouchableOpacity onPress={handleDelete} className="p-2">
+          <Text className="text-md" style={{ color: "#ef7171ff" }}>
             Delete
           </Text>
         </TouchableOpacity>
@@ -243,19 +241,18 @@ export default function EditHorseScreen() {
             <TouchableOpacity
               onPress={pickImage}
               disabled={uploading}
-              className="w-24 h-24 bg-gray-200 rounded-full items-center justify-center overflow-hidden"
+              className="w-24 h-24 rounded-full items-center justify-center overflow-hidden"
+              style={{ backgroundColor: colors.border }}
             >
               {uploading ? (
-                <ActivityIndicator size="large" />
+                <ActivityIndicator size="large" color={colors.primary} />
               ) : photoUrl ? (
-                // Display the uploaded photo
                 <Image
                   source={{ uri: photoUrl }}
                   className="w-full h-full"
                   resizeMode="cover"
                 />
               ) : (
-                // Show emoji if no photo
                 <Text className="text-5xl">🐴</Text>
               )}
             </TouchableOpacity>
@@ -264,7 +261,7 @@ export default function EditHorseScreen() {
               disabled={uploading}
               className="mt-3"
             >
-              <Text className="text-blue-500 font-semibold">
+              <Text className="font-semibold" style={{ color: colors.primary }}>
                 {uploading
                   ? "Uploading..."
                   : photoUrl
@@ -276,12 +273,23 @@ export default function EditHorseScreen() {
 
           {/* Name Input */}
           <View className="mb-6">
-            <Text className="text-base font-semibold mb-2">Horse Name</Text>
+            <Text
+              className="text-base font-semibold mb-2"
+              style={{ color: colors.text }}
+            >
+              Horse Name
+            </Text>
             <TextInput
               placeholder="Horse name"
+              placeholderTextColor={colors.textSecondary}
               value={name}
               onChangeText={setName}
-              className="bg-white p-4 rounded-lg border border-gray-200"
+              className="p-4 rounded-lg border"
+              style={{
+                backgroundColor: colors.card,
+                borderColor: colors.border,
+                color: colors.text,
+              }}
             />
           </View>
 
@@ -289,7 +297,10 @@ export default function EditHorseScreen() {
           <TouchableOpacity
             onPress={handleSave}
             disabled={saving}
-            className={`py-4 rounded-lg ${saving ? "bg-gray-400" : "bg-blue-500"}`}
+            className="py-4 rounded-lg"
+            style={{
+              backgroundColor: saving ? colors.border : colors.primary,
+            }}
           >
             <Text className="text-white text-center font-bold text-lg">
               {saving ? "Saving..." : "Save Changes"}

@@ -17,7 +17,13 @@ export default function HorseSelector() {
   const isHome = pathname === "/";
 
   return (
-    <View className="bg-white p-4 border-b border-gray-200 flex-row items-center justify-between">
+    <View
+      className="p-4 border-b flex-row items-center justify-between"
+      style={{
+        backgroundColor: colors.card,
+        borderColor: colors.border,
+      }}
+    >
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {horses.map((horse) => (
           <TouchableOpacity
@@ -62,10 +68,9 @@ export default function HorseSelector() {
         ))}
       </ScrollView>
       <View className="mb-2">
-        {/* Only show Add button on home */}
         {isHome && (
           <TouchableOpacity onPress={() => router.push("/add-horse")}>
-            <Text className=" font-semibold" style={{ color: colors.primary }}>
+            <Text className="font-semibold" style={{ color: colors.primary }}>
               + Add
             </Text>
           </TouchableOpacity>

@@ -13,19 +13,17 @@ import { supabase } from "../lib/supabase";
 import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system/legacy";
+import { useTheme } from "@react-navigation/native";
+import { ExtendedTheme } from "../utilities/themes";
 
 const AddHorseScreen = () => {
   const router = useRouter();
+  const { colors } = useTheme() as ExtendedTheme;
   const [name, setName] = useState("");
-  const [photoUri, setPhotoUri] = useState<string | null>(null); // Store selected photo temporarily
+  const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-  };
-
   const pickImage = async () => {
-    // Request permission to access photos
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (status !== "granted") {
@@ -36,14 +34,12 @@ const AddHorseScreen = () => {
       return;
     }
 
-    // Launch image picker
     const result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true, // Allow cropping
-      aspect: [1, 1], // Square crop
-      quality: 0.7, // Compress image
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.7,
     });
 
-    // If user selected an image, store it temporarily
     if (!result.canceled) {
       setPhotoUri(result.assets[0].uri);
     }
@@ -58,7 +54,6 @@ const AddHorseScreen = () => {
     setUploading(true);
 
     try {
-      // Get current user
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -67,8 +62,6 @@ const AddHorseScreen = () => {
         return;
       }
 
-      // Step 1: Create the horse record in the database
-      // We need the horse ID to upload the photo with the right filename
       const { data: newHorse, error: insertError } = await supabase
         .from("horses")
         .insert([
@@ -77,30 +70,25 @@ const AddHorseScreen = () => {
             owner_id: user.id,
           },
         ])
-        .select() // This returns the newly created horse with its ID
+        .select()
         .single();
 
       if (insertError) throw insertError;
 
-      // Step 2: If user selected a photo, upload it
       if (photoUri && newHorse) {
         try {
-          // Read the image file as base64
           const base64 = await FileSystem.readAsStringAsync(photoUri, {
             encoding: "base64",
           });
 
-          // Convert base64 to binary
           const binaryString = atob(base64);
           const bytes = new Uint8Array(binaryString.length);
           for (let i = 0; i < binaryString.length; i++) {
             bytes[i] = binaryString.charCodeAt(i);
           }
 
-          // Create file path: {userId}/{horseId}.jpg
           const filePath = `${user.id}/${newHorse.id}.jpg`;
 
-          // Upload to Supabase Storage
           const { error: uploadError } = await supabase.storage
             .from("horse-photos")
             .upload(filePath, bytes.buffer, {
@@ -110,12 +98,10 @@ const AddHorseScreen = () => {
 
           if (uploadError) throw uploadError;
 
-          // Get public URL
           const {
             data: { publicUrl },
           } = supabase.storage.from("horse-photos").getPublicUrl(filePath);
 
-          // Step 3: Update the horse record with the photo URL
           const { error: updateError } = await supabase
             .from("horses")
             .update({ photo_url: publicUrl })
@@ -124,8 +110,6 @@ const AddHorseScreen = () => {
           if (updateError) throw updateError;
         } catch (photoError) {
           console.error("Photo upload failed:", photoError);
-          // Don't fail the whole operation if photo upload fails
-          // The horse is created, just without a photo
           Alert.alert(
             "Horse added",
             "Horse was added but photo upload failed. You can add a photo later."
@@ -134,7 +118,7 @@ const AddHorseScreen = () => {
       }
 
       Alert.alert("Success!", `${name} has been added.`);
-      router.replace("/"); // Go back to home
+      router.replace("/");
     } catch (error: any) {
       console.error("Error adding horse:", error);
       Alert.alert("Error", error.message);
@@ -144,23 +128,35 @@ const AddHorseScreen = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
+    <SafeAreaView
+      className="flex-1"
+      edges={["top"]}
+      style={{ backgroundColor: colors.background }}
+    >
       <View className="flex-1 p-4">
         {/* Header */}
         <View className="mb-6">
           <TouchableOpacity onPress={() => router.back()}>
-            <Text className="text-blue-500 text-lg">← Back</Text>
+            <Text className="text-lg" style={{ color: colors.primary }}>
+              ← Back
+            </Text>
           </TouchableOpacity>
         </View>
 
-        <Text className="text-2xl font-bold mb-6">Add a Horse</Text>
+        <Text
+          className="text-2xl font-bold mb-6"
+          style={{ color: colors.text }}
+        >
+          Add a Horse
+        </Text>
 
         {/* Photo Picker */}
         <View className="items-center mb-6">
           <TouchableOpacity
             onPress={pickImage}
             disabled={uploading}
-            className="w-24 h-24 bg-gray-200 rounded-full items-center justify-center overflow-hidden"
+            className="w-24 h-24 rounded-full items-center justify-center overflow-hidden"
+            style={{ backgroundColor: colors.border }}
           >
             {photoUri ? (
               <Image
@@ -177,7 +173,7 @@ const AddHorseScreen = () => {
             disabled={uploading}
             className="mt-3"
           >
-            <Text className="text-blue-500 font-semibold">
+            <Text className="font-semibold" style={{ color: colors.primary }}>
               {photoUri ? "Change Photo" : "Add Photo"}
             </Text>
           </TouchableOpacity>
@@ -185,12 +181,23 @@ const AddHorseScreen = () => {
 
         {/* Name Input */}
         <View className="mb-6">
-          <Text className="text-base font-semibold mb-2">Horse Name</Text>
+          <Text
+            className="text-base font-semibold mb-2"
+            style={{ color: colors.text }}
+          >
+            Nickname
+          </Text>
           <TextInput
-            placeholder="Enter horse name"
-            className="bg-white p-4 rounded-lg border border-gray-200"
+            placeholder="Enter your horse's nickname"
+            placeholderTextColor={colors.textSecondary}
             value={name}
             onChangeText={setName}
+            className="p-4 rounded-lg border"
+            style={{
+              backgroundColor: colors.card,
+              borderColor: colors.border,
+              color: colors.text,
+            }}
           />
         </View>
 
@@ -198,7 +205,10 @@ const AddHorseScreen = () => {
         <TouchableOpacity
           onPress={handleAddHorse}
           disabled={uploading}
-          className={`py-4 rounded-lg ${uploading ? "bg-gray-400" : "bg-blue-500"}`}
+          className="py-4 rounded-lg"
+          style={{
+            backgroundColor: uploading ? colors.border : colors.primary,
+          }}
         >
           {uploading ? (
             <ActivityIndicator color="white" />

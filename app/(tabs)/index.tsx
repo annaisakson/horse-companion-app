@@ -19,7 +19,7 @@ import WeekOverview from "../../components/WeekOverview";
 import RecentActivities from "../../components/RecentActivities";
 import Last30DaysStats from "../../components/Last30DaysStats";
 import ActivityBreakdownChart from "../../components/SessionsPiechart";
-
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 interface Activity {
   id: string;
   horse_id: string;
@@ -173,16 +173,26 @@ export default function Homescreen() {
         {/* Today's Planned Activities */}
         {todaysPlans.length > 0 && (
           <View className="px-4 pb-4">
-            <View className="bg-blue-50 border-2 border-blue-200 p-4 rounded-lg">
-              <Text className="text-blue-900 font-bold text-lg mb-2">
-                📅 Today's Plan
+            <View
+              className="border p-4 rounded-lg"
+              style={{
+                backgroundColor: colors.card,
+                borderColor: colors.secondary,
+              }}
+            >
+              <Text
+                className="font-bold text-md mb-2"
+                style={{ color: colors.text }}
+              >
+                Today's Plan
               </Text>
               {todaysPlans.map((plan) => {
                 const activityType = getActivityType(plan.type);
                 return (
                   <TouchableOpacity
                     key={plan.id}
-                    className="bg-white p-3 rounded-lg mb-2"
+                    className="p-3 rounded-lg mb-2"
+                    style={{ backgroundColor: colors.secondary }}
                     onPress={() => {
                       router.push(
                         `/add-activity?planId=${plan.id}&type=${plan.type}&notes=${encodeURIComponent(plan.notes || "")}`
@@ -195,22 +205,33 @@ export default function Homescreen() {
                           {activityType.icon}
                         </Text>
                         <View className="flex-1">
-                          <Text className="font-semibold text-gray-900">
+                          <Text
+                            className="font-semibold"
+                            style={{ color: colors.text }}
+                          >
                             {activityType.label}
                           </Text>
                           {plan.notes && (
                             <Text
-                              className="text-sm text-gray-600"
+                              className="text-sm"
                               numberOfLines={1}
+                              style={{ color: colors.textSecondary }}
                             >
                               {plan.notes}
                             </Text>
                           )}
                         </View>
                       </View>
-                      <View className="bg-blue-500 px-3 py-1 rounded-full">
-                        <Text className="text-white text-xs font-bold">
-                          Log It →
+                      <View
+                        className="px-3 py-4 rounded-lg"
+                        // style={{ backgroundColor: colors.primary }}
+                      >
+                        <Text className="text-white text-md font-bold ">
+                          <FontAwesome
+                            name="arrow-right"
+                            size={18}
+                            style={{ color: colors.primary }}
+                          />
                         </Text>
                       </View>
                     </View>

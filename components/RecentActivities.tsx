@@ -41,7 +41,10 @@ export default function RecentActivities({
       </Text>
 
       {activities.length === 0 ? (
-        <View className="bg-white p-4 rounded-lg shadow-sm">
+        <View
+          className="bg-white p-4 rounded-lg shadow-sm"
+          style={{ backgroundColor: colors.card }}
+        >
           <Text className="text-center py-4" style={{ color: colors.text }}>
             No activities yet for {horseName}
           </Text>
@@ -81,7 +84,7 @@ export default function RecentActivities({
                   </Text>
                 )}
                 <Text className="text-white"> • </Text>
-                {feelingEmoji}
+                <Text className="text-white">{feelingEmoji}</Text>
                 {activityType.label === "Rest Day" && (
                   <MaterialCommunityIcons
                     name="sleep"
