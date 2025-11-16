@@ -9,12 +9,14 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
 import { useState } from "react";
+import { useTheme } from "@react-navigation/native";
 
 export default function AuthScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
+  const { colors } = useTheme();
 
   const handleAuth = async () => {
     if (!email || !password || (isSignUp && !name)) {
@@ -111,12 +113,20 @@ export default function AuthScreen() {
         onChangeText={setPassword}
       />
 
-      <Button title={isSignUp ? "Sign Up" : "Log In"} onPress={handleAuth} />
+      <TouchableOpacity
+        onPress={handleAuth}
+        className="py-2 px-3 rounded-lg items-center"
+        style={{ backgroundColor: colors.primary }}
+      >
+        <Text className="font-bold text-lg text-white">
+          {isSignUp ? "Sign Up" : "Log In"}
+        </Text>
+      </TouchableOpacity>
 
       <View className="h-4" />
 
       <TouchableOpacity onPress={() => setIsSignUp(!isSignUp)}>
-        <Text className="text-blue-600">
+        <Text style={{ color: colors.primary }}>
           {isSignUp
             ? "Already have an account? Log in"
             : "Don’t have an account? Sign up"}

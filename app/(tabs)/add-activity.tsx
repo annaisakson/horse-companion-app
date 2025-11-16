@@ -20,17 +20,28 @@ import {
 } from "../../lib/constants";
 import HorseSelector from "../../components/HorseSelector";
 import { useHorse } from "../../lib/HorseContext";
+import { useLocalSearchParams } from "expo-router";
 
 // needs to get the selected horse id from the homescreen
 // needs to post the activity to the api and fill the table in supabase
 
+const {
+  planId,
+  type: prefilledType,
+  notes: prefilledNotes,
+} = useLocalSearchParams<{
+  planId?: string;
+  type?: string;
+  notes?: string;
+}>();
+
 export default function AddActivityScreen() {
   const router = useRouter();
-  const [selectedType, setSelectedType] = useState<string>("");
+  const [selectedType, setSelectedType] = useState<string>(prefilledType || "");
+  const [notes, setNotes] = useState(decodeURIComponent(prefilledNotes || ""));
   const [duration, setDuration] = useState(30); // minutes
   const [level, setLevel] = useState(3);
   const [feeling, setFeeling] = useState<string>("");
-  const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const { selectedHorseId, selectedHorse } = useHorse();
 
@@ -123,6 +134,13 @@ export default function AddActivityScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
+      {planId && (
+        <View className="bg-blue-50 p-3 border-b border-blue-200">
+          <Text className="text-blue-900 font-semibold text-center">
+            📅 Logging planned activity
+          </Text>
+        </View>
+      )}
       <HorseSelector />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}

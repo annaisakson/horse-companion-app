@@ -146,7 +146,10 @@ export default function SettingsScreen() {
             <TouchableOpacity className="p-4">
               <Text className="text-base text-gray-700">Language</Text>
             </TouchableOpacity>
-            <TouchableOpacity className="p-4">
+            <TouchableOpacity
+              className="p-4"
+              onPress={() => router.push("/theme-select")}
+            >
               <Text className="text-base text-gray-700">Theme</Text>
             </TouchableOpacity>
           </View>

@@ -1,5 +1,6 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 export default function TabLayout() {
   return (
@@ -27,7 +28,7 @@ export default function TabLayout() {
         options={{
           title: "Add Activity",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="add-circle" size={size} color={color} />
+            <FontAwesome5 name="plus" size={size} color={color} />
           ),
         }}
       />

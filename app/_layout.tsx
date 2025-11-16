@@ -5,6 +5,8 @@ import { supabase } from "../lib/supabase";
 import { Session } from "@supabase/supabase-js";
 import { ActivityIndicator, View } from "react-native";
 import { HorseProvider } from "../lib/HorseContext";
+import { ThemeProvider } from "@react-navigation/native";
+import { ThemeProviderCustom, useAppTheme } from "../lib/ThemeContext";
 
 // TODO:
 // if restday, disable other choices except notes
@@ -15,11 +17,13 @@ import { HorseProvider } from "../lib/HorseContext";
 // overall styling
 // limits on amount of horses
 // check that fetch horses works after logging in after a while
+// fix  alerts to just show a few secs and not having to click
 
-export default function RootLayout() {
+function LayoutInner() {
   const router = useRouter();
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const { theme } = useAppTheme();
 
   // Check session once on mount
   useEffect(() => {
@@ -58,8 +62,18 @@ export default function RootLayout() {
   }
 
   return (
-    <HorseProvider>
-      <Slot />
-    </HorseProvider>
+    <ThemeProvider value={theme}>
+      <HorseProvider>
+        <Slot />
+      </HorseProvider>
+    </ThemeProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <ThemeProviderCustom>
+      <LayoutInner />
+    </ThemeProviderCustom>
   );
 }

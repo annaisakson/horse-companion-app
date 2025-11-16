@@ -202,17 +202,21 @@ export default function ActivityDetailsScreen() {
         >
           {/* Header */}
           <View className="flex-row items-center justify-between p-4 bg-white border-b border-gray-200">
+            {/* Back button */}
             <TouchableOpacity onPress={() => router.back()}>
               <Text className="text-blue-500 text-lg">← Back</Text>
             </TouchableOpacity>
 
+            {/* Right side button */}
             {!isEditing ? (
-              <TouchableOpacity onPress={() => setIsEditing(true)}>
-                <Text className="text-blue-500 text-lg font-semibold">
-                  Edit
+              // VIEW MODE → DELETE BUTTON
+              <TouchableOpacity onPress={handleDelete} className="p-2">
+                <Text className="text-red-600 text-md font-semibold">
+                  Delete
                 </Text>
               </TouchableOpacity>
             ) : (
+              // EDIT MODE → CANCEL BUTTON
               <TouchableOpacity onPress={() => setIsEditing(false)}>
                 <Text className="text-gray-500 text-lg">Cancel</Text>
               </TouchableOpacity>
@@ -410,16 +414,6 @@ export default function ActivityDetailsScreen() {
                     {saving ? "Saving..." : "Save Changes"}
                   </Text>
                 </TouchableOpacity>
-
-                {/* Delete Button */}
-                <TouchableOpacity
-                  onPress={handleDelete}
-                  className="py-4 rounded-lg bg-red-700"
-                >
-                  <Text className="text-white text-center font-bold text-lg">
-                    Delete Activity
-                  </Text>
-                </TouchableOpacity>
               </>
             ) : (
               // VIEW MODE
@@ -476,13 +470,13 @@ export default function ActivityDetailsScreen() {
                   </View>
                 )}
 
-                {/* Delete Button (View Mode) */}
+                {/* Edit Button (View Mode) */}
                 <TouchableOpacity
-                  onPress={handleDelete}
-                  className="py-4 rounded-lg bg-red-700 mt-4"
+                  onPress={() => setIsEditing(true)}
+                  className="py-4 rounded-lg bg-blue-500 mt-4"
                 >
                   <Text className="text-white text-center font-bold text-lg">
-                    Delete Activity
+                    Edit Activity
                   </Text>
                 </TouchableOpacity>
               </>
