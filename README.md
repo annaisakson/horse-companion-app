@@ -11,7 +11,7 @@ With Equipal you can log your everyday activities with your horses, keeping trac
 
 
 ### Features to come: 
-- *Shared horses*
+*Shared horses:*
 Sharing horses with someone else? Maybe you have a friend that regularly rides your horse? Don't worry, your friend can download the app and log their activities aswell, making it super easy to track your horses everyday life.
 
 
