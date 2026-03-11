@@ -1,10 +1,33 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { useTheme } from "@react-navigation/native";
+import { ExtendedTheme } from "../../utilities/themes";
 
 export default function TabLayout() {
+  const theme = useTheme() as ExtendedTheme;
+  const { colors } = theme;
   return (
-    <Tabs screenOptions={{ headerShown: false }}>
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        // Tab bar background
+        tabBarStyle: {
+          backgroundColor: colors.bar,
+          borderTopColor: colors.border,
+          borderTopWidth: 1,
+        },
+        // Active tab (icon + label)
+        tabBarActiveTintColor: colors.primary,
+        // Inactive tab (icon + label)
+        tabBarInactiveTintColor: colors.textSecondary,
+        // Label styling
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: "500",
+        },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{

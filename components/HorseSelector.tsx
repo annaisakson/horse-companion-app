@@ -18,9 +18,9 @@ export default function HorseSelector() {
 
   return (
     <View
-      className="p-4 border-b flex-row items-center justify-between"
+      className="p-4 flex-row items-center justify-between shadow-sm"
       style={{
-        backgroundColor: colors.card,
+        backgroundColor: colors.bar,
         borderColor: colors.border,
       }}
     >
@@ -33,10 +33,14 @@ export default function HorseSelector() {
           >
             {/* Photo Container */}
             <View
-              className="w-16 h-16 rounded-full items-center justify-center overflow-hidden border-4 mb-2"
+              className="rounded-full items-center justify-center overflow-hidden border-4 mb-2 shadow-sm"
               style={{
+                width: selectedHorseId === horse.id ? 68 : 62,
+                height: selectedHorseId === horse.id ? 68 : 62,
                 borderColor:
-                  selectedHorseId === horse.id ? colors.primary : colors.border,
+                  selectedHorseId === horse.id
+                    ? colors.primary
+                    : colors.horseBorder,
                 backgroundColor: colors.background,
               }}
             >
@@ -58,7 +62,7 @@ export default function HorseSelector() {
                 color:
                   selectedHorseId === horse.id
                     ? colors.primary
-                    : colors.textSecondary,
+                    : colors.horseBorder,
               }}
               numberOfLines={1}
             >

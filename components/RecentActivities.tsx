@@ -75,16 +75,16 @@ export default function RecentActivities({
                 className="flex-row items-center mb-2 self-start px-3 py-2 rounded-2xl"
                 style={{ backgroundColor: activityType.color }}
               >
-                <Text className="text-white font-semibold">
+                <Text className="font-semibold" style={{ color: colors.card }}>
                   {activityType.label}
                 </Text>
                 {!SPECIAL_TYPES.includes(activity.type) && (
-                  <Text className="text-white ml-2">
+                  <Text className=" ml-2" style={{ color: colors.card }}>
                     • {activity.duration} min
                   </Text>
                 )}
-                <Text className="text-white"> • </Text>
-                <Text className="text-white">{feelingEmoji}</Text>
+                <Text style={{ color: colors.card }}> • </Text>
+                <Text style={{ color: colors.card }}>{feelingEmoji}</Text>
                 {activityType.label === "Rest Day" && (
                   <MaterialCommunityIcons
                     name="sleep"

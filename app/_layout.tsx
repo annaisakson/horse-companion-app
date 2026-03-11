@@ -7,6 +7,7 @@ import { ActivityIndicator, View } from "react-native";
 import { HorseProvider } from "../lib/HorseContext";
 import { ThemeProvider } from "@react-navigation/native";
 import { ThemeProviderCustom, useAppTheme } from "../lib/ThemeContext";
+import { StatusBar } from "expo-status-bar";
 
 // TODO:
 // if restday, disable other choices except notes
@@ -39,7 +40,7 @@ function LayoutInner() {
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
-      }
+      },
     );
 
     return () => listener.subscription.unsubscribe();
@@ -64,6 +65,10 @@ function LayoutInner() {
   return (
     <ThemeProvider value={theme}>
       <HorseProvider>
+        <StatusBar
+          style={theme.dark ? "light" : "dark"}
+          backgroundColor={theme.colors.background}
+        />
         <Slot />
       </HorseProvider>
     </ThemeProvider>

@@ -63,7 +63,7 @@ export default function CalendarScreen() {
   useFocusEffect(
     useCallback(() => {
       fetchActivities();
-    }, [selectedHorseId])
+    }, [selectedHorseId]),
   );
 
   const handleDayPress = (day: DateData) => {
@@ -146,6 +146,10 @@ export default function CalendarScreen() {
             markedDates={getMarkedDates()}
             markingType="multi-dot"
             firstDay={1}
+            style={{
+              borderRadius: 10,
+              overflow: "hidden",
+            }}
             theme={{
               backgroundColor: colors.card,
               calendarBackground: colors.card,

@@ -65,9 +65,9 @@ export default function SettingsScreen() {
       <ScrollView className="flex-1">
         {/* Header */}
         <View
-          className="p-6 border-b"
+          className="p-6 shadow-sm"
           style={{
-            backgroundColor: colors.card,
+            backgroundColor: colors.bar,
             borderColor: colors.border,
           }}
         >

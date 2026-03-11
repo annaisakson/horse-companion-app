@@ -5,6 +5,8 @@ export interface ExtendedTheme extends Theme {
   colors: Theme["colors"] & {
     textSecondary: string;
     secondary: string;
+    horseBorder: string;
+    bar: string;
   };
 }
 
@@ -21,6 +23,8 @@ export const DefaultLight: ExtendedTheme = {
     textSecondary: "#5a5959ff",
     border: "#E0E0E0",
     notification: "#7685C0",
+    horseBorder: "#E0E0E0",
+    bar: "#FFFFFF",
   },
   fonts: {
     regular: {
@@ -67,6 +71,8 @@ export const DefaultDark: ExtendedTheme = {
     textSecondary: "#545454ff",
     border: "#272729",
     notification: "#1b2743ff",
+    horseBorder: "#272729",
+    bar: "#1E1E1E",
   },
   fonts: DefaultLight.fonts, // reuse same fonts
 };
@@ -76,10 +82,39 @@ export const Themes = {
   dark: DefaultDark,
   blue: {
     ...DefaultLight,
-    colors: { ...DefaultLight.colors, primary: "#0070f3" },
+    colors: {
+      ...DefaultLight.colors,
+      primary: "#57a0f3",
+      background: "#ddebfb",
+      secondary: "#ccd9fb",
+      border: "#cee3fb",
+      horseBorder: "#57a0f370",
+      bar: "#eaf5ff",
+    },
   },
   green: {
     ...DefaultLight,
-    colors: { ...DefaultLight.colors, primary: "#22c55e" },
+    colors: {
+      ...DefaultLight.colors,
+      primary: "#8ed482",
+      background: "#dffbd1",
+      secondary: "#d2fabe",
+      border: "#d0faba",
+      horseBorder: "#8ed48270",
+      bar: "#eafce1",
+    },
+  },
+  pink: {
+    ...DefaultLight,
+    colors: {
+      ...DefaultLight.colors,
+      primary: "#e099c1",
+      background: "#fbd1e0",
+      secondary: "#ffd0ec",
+      card: "#faf0f3",
+      border: "#fcdee9",
+      horseBorder: "#e099c170",
+      bar: "#ffd8e5",
+    },
   },
 };

@@ -64,7 +64,7 @@ export default function WeekOverview({
               style={{
                 backgroundColor: day.isToday ? colors.primary : colors.card,
               }}
-              className="items-center p-3 rounded-lg"
+              className="items-center p-3 rounded-lg shadow-sm"
             >
               <Text
                 className="text-xs font-medium mb-1"
