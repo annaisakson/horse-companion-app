@@ -72,7 +72,7 @@ export default function HorseSelector() {
         ))}
       </ScrollView>
       <View className="mb-2">
-        {isHome && (
+        {isHome && horses.length < 3 && (
           <TouchableOpacity onPress={() => router.push("/add-horse")}>
             <Text className="font-semibold" style={{ color: colors.primary }}>
               + Add

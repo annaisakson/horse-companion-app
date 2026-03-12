@@ -194,19 +194,21 @@ export default function SettingsScreen() {
                 </TouchableOpacity>
               ))
             )}
-            <TouchableOpacity
-              className="p-4 flex-row justify-between items-center border-t"
-              style={{ borderColor: colors.border }}
-              onPress={() => router.push("/add-horse")}
-            >
-              <Text
-                className="text-base font-semibold"
-                style={{ color: colors.primary }}
+            {horses.length < 3 && (
+              <TouchableOpacity
+                className="p-4 flex-row justify-between items-center border-t"
+                style={{ borderColor: colors.border }}
+                onPress={() => router.push("/add-horse")}
               >
-                Add New Horse
-              </Text>
-              <Text style={{ color: colors.primary }}>+</Text>
-            </TouchableOpacity>
+                <Text
+                  className="text-base font-semibold"
+                  style={{ color: colors.primary }}
+                >
+                  Add New Horse
+                </Text>
+                <Text style={{ color: colors.primary }}>+</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           {/* Customization Section */}
