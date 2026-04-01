@@ -59,7 +59,7 @@ export default function EditHorseScreen() {
     if (status !== "granted") {
       Alert.alert(
         "Permission needed",
-        "Please allow access to your photos to upload a horse image."
+        "Please allow access to your photos to upload a horse image.",
       );
       return;
     }
@@ -90,7 +90,8 @@ export default function EditHorseScreen() {
       const filePath = `${user.id}/${id}.jpg`;
 
       if (photoUrl) {
-        const oldPath = photoUrl.split("/horse-photos/")[1];
+        const cleanUrl = photoUrl.split("?")[0]; // strip any existing ?t=... param
+        const oldPath = cleanUrl.split("/horse-photos/")[1];
         await supabase.storage.from("horse-photos").remove([oldPath]);
       }
 
@@ -117,17 +118,18 @@ export default function EditHorseScreen() {
         data: { publicUrl },
       } = supabase.storage.from("horse-photos").getPublicUrl(filePath);
 
+      // Cache busting so the new img shows
+      const cacheBustedUrl = `${publicUrl}?t=${Date.now()}`;
+
       const { error: updateError } = await supabase
         .from("horses")
-        .update({ photo_url: publicUrl })
+        .update({ photo_url: cacheBustedUrl })
         .eq("id", id);
 
       if (updateError) throw updateError;
 
-      setPhotoUrl(publicUrl);
+      setPhotoUrl(cacheBustedUrl);
       await refreshHorses();
-
-      Alert.alert("Success!", "Photo updated");
     } catch (error: any) {
       console.error("Error uploading image:", error);
       Alert.alert("Error", "Could not upload photo: " + error.message);
@@ -193,7 +195,7 @@ export default function EditHorseScreen() {
             router.back();
           },
         },
-      ]
+      ],
     );
   };
 

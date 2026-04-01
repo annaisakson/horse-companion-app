@@ -54,7 +54,7 @@ export default function WeekOverview({
 
   return (
     <View className="px-4 pb-4">
-      <View className="flex-row justify-between">
+      <View className="flex-row gap-1">
         {thisWeek.map((day, index) => {
           const dayActivities = getActivitiesForDate(day.date);
 
@@ -62,6 +62,7 @@ export default function WeekOverview({
             <View
               key={index}
               style={{
+                flex: 1,
                 backgroundColor: day.isToday ? colors.primary : colors.card,
               }}
               className="items-center p-3 rounded-lg shadow-sm"

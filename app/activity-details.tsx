@@ -21,6 +21,7 @@ import {
 } from "../lib/constants";
 import { useTheme } from "@react-navigation/native";
 import { ExtendedTheme } from "../utilities/themes";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 interface Activity {
   id: string;
@@ -52,7 +53,35 @@ export default function ActivityDetailsScreen() {
   const [feeling, setFeeling] = useState<string>("");
   const [notes, setNotes] = useState("");
 
-  const MAX_NOTES_LENGTH = 500;
+  // Date picker state
+  const [activityDate, setActivityDate] = useState<Date>(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const toLocalDateString = (date: Date): string => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  };
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const handleDateChange = (_event: any, selected?: Date) => {
+    setShowDatePicker(Platform.OS === "ios");
+
+    if (!selected) return;
+
+    selected.setHours(0, 0, 0, 0);
+
+    if (selected > today) {
+      setActivityDate(today);
+    } else {
+      setActivityDate(selected);
+    }
+  };
+
+  const MAX_NOTES_LENGTH = 250;
 
   useEffect(() => {
     fetchActivity();
@@ -76,6 +105,9 @@ export default function ActivityDetailsScreen() {
     }
 
     setActivity(data);
+    const parsedDate = new Date(data.date);
+    parsedDate.setHours(0, 0, 0, 0);
+    setActivityDate(parsedDate);
     setSelectedType(data.type);
     setDuration(data.duration || 30);
     setLevel(data.level || 3);
@@ -94,6 +126,7 @@ export default function ActivityDetailsScreen() {
     const updateData: any = {
       type: selectedType,
       notes: notes,
+      date: toLocalDateString(activityDate),
     };
 
     if (!isSpecialType) {
@@ -151,7 +184,7 @@ export default function ActivityDetailsScreen() {
             router.back();
           },
         },
-      ]
+      ],
     );
   };
 
@@ -169,10 +202,10 @@ export default function ActivityDetailsScreen() {
 
   const isSpecialType = SPECIAL_TYPES.includes(selectedType);
   const specialActivityTypes = ACTIVITY_TYPES.filter((type) =>
-    SPECIAL_TYPES.includes(type.id)
+    SPECIAL_TYPES.includes(type.id),
   );
   const regularActivityTypes = ACTIVITY_TYPES.filter(
-    (type) => !SPECIAL_TYPES.includes(type.id)
+    (type) => !SPECIAL_TYPES.includes(type.id),
   );
 
   if (loading) {
@@ -245,23 +278,63 @@ export default function ActivityDetailsScreen() {
 
           <View className="p-4">
             {/* Date Header */}
-            <View className="mb-6">
-              <Text
-                className="text-xl font-bold mb-2"
-                style={{ color: colors.text }}
-              >
-                {new Date(activity.date).toLocaleDateString("en-US", {
-                  weekday: "long",
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </Text>
-            </View>
+            {!isEditing && (
+              <View className="mb-6">
+                <Text
+                  className="text-xl font-bold mb-2"
+                  style={{ color: colors.text }}
+                >
+                  {new Date(activity.date).toLocaleDateString("en-US", {
+                    weekday: "long",
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </Text>
+              </View>
+            )}
 
+            {/* // ── EDITING MODE ────────────────────────────────────────────────────────── */}
             {isEditing ? (
-              // EDIT MODE
               <>
+                {/* Date picker */}
+                <TouchableOpacity
+                  onPress={() => setShowDatePicker(true)}
+                  className="flex-row items-center mb-6 px-4 py-3 rounded-lg border"
+                  style={{
+                    backgroundColor: colors.card,
+                    borderColor: colors.border,
+                  }}
+                >
+                  <View className="flex-1">
+                    <Text
+                      className="text-xs font-medium mb-0.5"
+                      style={{ color: colors.textSecondary }}
+                    >
+                      Activity date
+                    </Text>
+                    <Text style={{ color: colors.text, fontWeight: "600" }}>
+                      {activityDate.toLocaleDateString("en-US", {
+                        weekday: "long",
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </Text>
+                  </View>
+
+                  <Text style={{ color: colors.textSecondary }}>›</Text>
+                </TouchableOpacity>
+                {showDatePicker && (
+                  <DateTimePicker
+                    value={activityDate}
+                    mode="date"
+                    display={Platform.OS === "ios" ? "inline" : "default"}
+                    maximumDate={today}
+                    onChange={handleDateChange}
+                  />
+                )}
+
                 {/* Special Type Checkboxes */}
                 <View className="mb-10">
                   <View className="flex-row gap-3">
@@ -270,7 +343,7 @@ export default function ActivityDetailsScreen() {
                         key={type.id}
                         onPress={() =>
                           setSelectedType(
-                            selectedType === type.id ? "" : type.id
+                            selectedType === type.id ? "" : type.id,
                           )
                         }
                         className="flex-1 flex-row items-center rounded-lg"

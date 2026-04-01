@@ -14,11 +14,12 @@ import { StatusBar } from "expo-status-bar";
 // update page when changing horse
 // click activity to go to go to edit page
 // add picture to horse
-// add proper safety to passwords/names/etc
+// add proper safety to passwords/names/etc length etc
 // overall styling
-// limits on amount of horses
 // check that fetch horses works after logging in after a while
 // fix  alerts to just show a few secs and not having to click
+// max 3 horses (maybe pay to have more in future)
+// max 3 activities in one day
 
 function LayoutInner() {
   const router = useRouter();
@@ -36,10 +37,13 @@ function LayoutInner() {
 
     initAuth();
 
-    // Listen for changes
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
+
+        if (_event === "PASSWORD_RECOVERY") {
+          router.push("/reset-password");
+        }
       },
     );
 
