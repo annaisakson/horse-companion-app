@@ -49,7 +49,7 @@ export default function DateDetailsModal({
     const activityType =
       ACTIVITY_TYPES.find((t) => t.id === activity.type) || ACTIVITY_TYPES[7];
     const feelingEmoji = FEELING_OPTIONS.find(
-      (f) => f.id === activity.feeling
+      (f) => f.id === activity.feeling,
     )?.emoji;
 
     return (
@@ -207,7 +207,7 @@ export default function DateDetailsModal({
                         Planned Activities
                       </Text>
                       {activities.map((activity) =>
-                        renderActivityCard(activity)
+                        renderActivityCard(activity),
                       )}
                       <TouchableOpacity
                         className="py-3 rounded-lg mt-2"
@@ -261,7 +261,7 @@ export default function DateDetailsModal({
                         Activities
                       </Text>
                       {activities.map((activity) =>
-                        renderActivityCard(activity)
+                        renderActivityCard(activity),
                       )}
                       <TouchableOpacity
                         className="py-3 rounded-lg mt-2"

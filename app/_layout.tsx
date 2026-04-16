@@ -20,6 +20,7 @@ import { StatusBar } from "expo-status-bar";
 // fix  alerts to just show a few secs and not having to click
 // max 3 horses (maybe pay to have more in future)
 // max 3 activities in one day
+// page for all activities with filters
 
 function LayoutInner() {
   const router = useRouter();

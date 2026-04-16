@@ -17,9 +17,11 @@ import { useTheme } from "@react-navigation/native";
 import { ExtendedTheme } from "../../utilities/themes";
 import WeekOverview from "../../components/WeekOverview";
 import RecentActivities from "../../components/RecentActivities";
-import Last30DaysStats from "../../components/Last30DaysStats";
+import Last30DaysStats from "../../components/TotalStats";
 import ActivityBreakdownChart from "../../components/SessionsPiechart";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import StatsContainer from "../../components/StatsContainer";
+
 interface Activity {
   id: string;
   horse_id: string;
@@ -56,7 +58,7 @@ export default function Homescreen() {
         }
       };
       refresh();
-    }, [selectedHorseId])
+    }, [selectedHorseId]),
   );
 
   const fetchActivities = async () => {
@@ -195,7 +197,7 @@ export default function Homescreen() {
                     style={{ backgroundColor: colors.secondary }}
                     onPress={() => {
                       router.push(
-                        `/add-activity?planId=${plan.id}&type=${plan.type}&notes=${encodeURIComponent(plan.notes || "")}`
+                        `/add-activity?planId=${plan.id}&type=${plan.type}&notes=${encodeURIComponent(plan.notes || "")}`,
                       );
                     }}
                   >
@@ -251,10 +253,7 @@ export default function Homescreen() {
               getActivityType={getActivityType}
               getFeelingEmoji={getFeelingEmoji}
             />
-
-            <Last30DaysStats activities={activities} />
-
-            <ActivityBreakdownChart activities={activities} />
+            <StatsContainer activities={activities} />
           </View>
         )}
       </ScrollView>

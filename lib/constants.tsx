@@ -3,11 +3,36 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 export const ACTIVITY_TYPES = [
-  { id: "dressage", label: "Dressage", icon: "🎯", color: "#ef7474ff" },
-  { id: "jumping", label: "Jumping", icon: "🏇", color: "#78a9d9ff" },
-  { id: "groundwork", label: "Groundwork", icon: "🤝", color: "#a197cd" },
-  { id: "lunging", label: "Lunging", icon: "🔄", color: "#dfa6cf" },
-  { id: "hacking", label: "Hacking", icon: "🌲", color: "#7baf63ff" },
+  {
+    id: "dressage",
+    label: "Dressage",
+    icon: require("../assets/images/activities/dressage.png"),
+    color: "#ef7474ff",
+  },
+  {
+    id: "jumping",
+    label: "Jumping",
+    icon: require("../assets/images/activities/jumping.png"),
+    color: "#78a9d9ff",
+  },
+  {
+    id: "groundwork",
+    label: "Groundwork",
+    icon: require("../assets/images/activities/groundwork.png"),
+    color: "#a197cd",
+  },
+  {
+    id: "lunging",
+    label: "Lunging",
+    icon: require("../assets/images/activities/lunging.png"),
+    color: "#dfa6cf",
+  },
+  {
+    id: "hacking",
+    label: "Hacking",
+    icon: require("../assets/images/activities/hacking.png"),
+    color: "#7baf63ff",
+  },
   {
     id: "rest",
     label: "Rest Day",
@@ -20,7 +45,12 @@ export const ACTIVITY_TYPES = [
     icon: <Ionicons name="bandage-outline" size={20} />,
     color: "#7c7c7cff",
   },
-  { id: "other", label: "Other", icon: "✨", color: "#FCB53B" },
+  {
+    id: "other",
+    label: "Other",
+    icon: require("../assets/images/activities/other.png"),
+    color: "#FCB53B",
+  },
 ];
 
 export const FEELING_OPTIONS = [

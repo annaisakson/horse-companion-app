@@ -22,6 +22,7 @@ import {
 import { useTheme } from "@react-navigation/native";
 import { ExtendedTheme } from "../utilities/themes";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { renderActivityIcon } from "../utilities/iconHandler";
 
 interface Activity {
   id: string;
@@ -367,7 +368,9 @@ export default function ActivityDetailsScreen() {
                             </Text>
                           )}
                         </View>
-                        <Text className="text-lg mr-2">{type.icon}</Text>
+                        <Text className="text-lg mr-2">
+                          {renderActivityIcon(type.icon, 32)}
+                        </Text>
                         <Text
                           className="font-semibold"
                           style={{
@@ -412,7 +415,9 @@ export default function ActivityDetailsScreen() {
                               : colors.card,
                         }}
                       >
-                        <Text className="text-2xl mb-1">{type.icon}</Text>
+                        <Text className="text-2xl mb-1">
+                          {renderActivityIcon(type.icon, 32)}
+                        </Text>
                         <Text
                           className="text-xs font-medium"
                           style={{
@@ -604,7 +609,7 @@ export default function ActivityDetailsScreen() {
                   style={{ backgroundColor: activityType.color }}
                 >
                   <Text className="text-white text-xl mr-2">
-                    {activityType.icon}
+                    {renderActivityIcon(activityType.icon, 24)}
                   </Text>
                   <Text className="text-white font-bold text-lg">
                     {activityType.label}

@@ -26,6 +26,7 @@ import { useTheme } from "@react-navigation/native";
 import { ExtendedTheme } from "../../utilities/themes";
 import { useFocusEffect } from "expo-router";
 import { useCallback } from "react";
+import { renderActivityIcon } from "../../utilities/iconHandler";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -318,7 +319,7 @@ export default function AddActivityScreen() {
                     className="text-lg mr-2"
                     style={{ color: colors.textSecondary, fontSize: 24 }}
                   >
-                    {type.icon}
+                    {renderActivityIcon(type.icon, 32)}
                   </Text>
                   <Text
                     className="font-semibold"
@@ -358,10 +359,14 @@ export default function AddActivityScreen() {
                   className="mr-3 px-4 py-3 rounded-lg items-center justify-center w-[92px]"
                   style={{
                     backgroundColor:
-                      selectedType === type.id ? colors.primary : colors.card,
+                      selectedType === type.id
+                        ? colors.primary
+                        : colors.secondary,
                   }}
                 >
-                  <Text className="text-2xl mb-1">{type.icon}</Text>
+                  <Text className="text-2xl mb-1">
+                    {renderActivityIcon(type.icon, 48)}
+                  </Text>
                   <Text
                     className="text-xs font-medium"
                     style={{

@@ -9,85 +9,65 @@ interface Activity {
   date: string;
 }
 
-interface ActivityBreakdownChartProps {
+interface Props {
   activities: Activity[];
+  days?: number;
 }
 
-export default function ActivityBreakdownChart({
-  activities,
-}: ActivityBreakdownChartProps) {
+export default function SessionsPiechart({ activities, days }: Props) {
   const { colors } = useTheme() as ExtendedTheme;
 
-  // Get activity type breakdown for last 30 days
-  const getActivityTypeBreakdown = () => {
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const getFilteredActivities = () => {
+    if (!days) return activities;
 
-    // Filter activities from last 30 days
-    const recentActivities = activities.filter((activity) => {
-      const activityDate = new Date(activity.date);
-      return activityDate >= thirtyDaysAgo;
-    });
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
 
-    // Count each activity type
-    const typeCounts: { [key: string]: number } = {};
-
-    recentActivities.forEach((activity) => {
-      typeCounts[activity.type] = (typeCounts[activity.type] || 0) + 1;
-    });
-
-    // Convert to chart data format
-    const chartData = Object.entries(typeCounts).map(([type, count]) => {
-      const activityType = ACTIVITY_TYPES.find((t) => t.id === type);
-      return {
-        name: activityType?.label || type,
-        count: count,
-        color: activityType?.color || "#3B82F6",
-        legendFontColor: colors.text,
-        legendFontSize: 12,
-      };
-    });
-
-    return chartData;
+    return activities.filter((a) => new Date(a.date) >= cutoff);
   };
 
-  const activityBreakdown = getActivityTypeBreakdown();
+  const filtered = getFilteredActivities();
+
+  const typeCounts: Record<string, number> = {};
+
+  filtered.forEach((a) => {
+    typeCounts[a.type] = (typeCounts[a.type] || 0) + 1;
+  });
+
+  const data = Object.entries(typeCounts).map(([type, count]) => {
+    const t = ACTIVITY_TYPES.find((x) => x.id === type);
+
+    return {
+      name: t?.label || type,
+      count,
+      color: t?.color || "#3B82F6",
+      legendFontColor: colors.text,
+      legendFontSize: 12,
+    };
+  });
+
+  if (data.length === 0) {
+    return (
+      <Text style={{ color: colors.textSecondary, textAlign: "center" }}>
+        No data
+      </Text>
+    );
+  }
 
   return (
-    <View
-      className="p-4 rounded-lg shadow-sm mb-8"
-      style={{ backgroundColor: colors.card }}
-    >
-      <Text
-        className="text-lg font-semibold mb-3"
-        style={{ color: colors.text }}
-      >
-        Sessions Breakdown (Last 30 Days)
-      </Text>
-
-      {activityBreakdown.length === 0 ? (
-        <Text
-          className="text-center py-4"
-          style={{ color: colors.textSecondary }}
-        >
-          No activities in the last 30 days
-        </Text>
-      ) : (
-        <View className="items-center">
-          <PieChart
-            data={activityBreakdown}
-            width={Dimensions.get("window").width - 48}
-            height={220}
-            chartConfig={{
-              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-            }}
-            accessor="count"
-            backgroundColor="transparent"
-            paddingLeft="15"
-            absolute
-          />
-        </View>
-      )}
+    <View style={{ alignItems: "center" }}>
+      <PieChart
+        data={data}
+        width={Dimensions.get("window").width - 50}
+        height={220}
+        accessor="count"
+        backgroundColor="transparent"
+        paddingLeft="15"
+        absolute
+        chartConfig={{
+          color: () => colors.text,
+        }}
+      />
     </View>
   );
 }
