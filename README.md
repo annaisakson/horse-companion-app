@@ -1,50 +1,17 @@
-# Welcome to your Expo app 👋
+# Welcome to Equipal, your best friend for managing your horse life🐴
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Throw away that old notebook and try a more modern solution!
+With Equipal you can log your everyday activities with your horses, keeping track of their training and health. 
+🐎 Log the type of activity, duration and more! See statistics over time and keep track over multiple horses.
 
-## Get started
+✅ Equipal is perfect for you if you:
+- Want an easy and fast way to log your training
+- Want to keep track of your horses rest days and injuries
+- Don't want overly complicated apps that you're not gonna use in the long term anyway
 
-1. Install dependencies
 
-   ```bash
-   npm install
-   ```
+### Features to come: 
+*Shared horses:*
+Sharing horses with someone else? Maybe you have a friend that regularly rides your horse? Don't worry, your friend can download the app and log their activities aswell, making it super easy to track your horses everyday life.
 
-2. Start the app
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
